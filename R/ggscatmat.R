@@ -153,7 +153,8 @@ uppertriangle <- function(data, columns=1:ncol(data), color=NULL) {
 #' data(flea)
 #' scatmat(flea, columns=2:4)
 #' scatmat(flea, columns= 2:4, color="species")
-scatmat <- function(data, columns=1:ncol(data), color=NULL, alpha=1) {
+scatmat <- function(data, columns=1:ncol(data), color=NULL, alpha=1,
+                    scales = "fixed") {
   data <- upgrade_scatmat_data(data)
   data.choose <- data[, columns]
   dn <- data.choose[sapply(data.choose, is.numeric)]
@@ -163,7 +164,7 @@ scatmat <- function(data, columns=1:ncol(data), color=NULL, alpha=1) {
     ltdata.new <- lowertriangle(data, columns = columns, color = color)
     r <- ggplot(ltdata.new, mapping = aes_string(x = "xvalue", y = "yvalue")) +
       theme(axis.title.x = element_blank(), axis.title.y = element_blank()) +
-      facet_grid(ylab ~ xlab, scales = "free") +
+      facet_grid(ylab ~ xlab, scales = scales) +
       theme(aspect.ratio = 1)
     if (is.null(color)) {
       densities <- do.call("rbind", lapply(1:ncol(dn), function(i) {
@@ -226,7 +227,7 @@ scatmat <- function(data, columns=1:ncol(data), color=NULL, alpha=1) {
 #' data(flea)
 #' ggscatmat(flea, columns = 2:4)
 #' ggscatmat(flea, columns = 2:4, color = "species")
-ggscatmat <- function(data, columns=1:ncol(data), color = NULL, alpha = 1){
+ggscatmat <- function(data, columns=1:ncol(data), color = NULL, alpha = 1, ...){
 
   data <- upgrade_scatmat_data(data)
   data.choose <- data[, columns]
@@ -241,10 +242,10 @@ ggscatmat <- function(data, columns=1:ncol(data), color = NULL, alpha = 1){
 
   a <- uppertriangle(data, columns = columns, color = color)
   if (is.null(color)){
-    plot <- scatmat(data, columns = columns, alpha = alpha) +
+    plot <- scatmat(data, columns = columns, alpha = alpha, ...) +
       geom_text(data = a, aes_string(label = "r"), colour = "black")
   } else {
-    plot <- scatmat(data, columns = columns, color = color, alpha = alpha) +
+    plot <- scatmat(data, columns = columns, color = color, alpha = alpha, ...) +
       geom_text(data = a, aes_string(label = "r", color = "colorcolumn")) + labs(color = color)
   }
   factor <- data.choose[sapply(data.choose, is.factor)]
